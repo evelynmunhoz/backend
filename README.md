@@ -152,6 +152,7 @@ Declarar variáveis é alocar um espaço na memoria que permite a inclusão e ma
 - pode ser criada usando "const" ou "define"
 - não permitem interpolação
 
+### Semana 2 - Operadores em PHP (Aritméticos, Relacionais e Lógicos)
 ##### Estudo de operadores
 
 **Aritméticos**: São usados para Realizar Cálculos.
@@ -192,14 +193,205 @@ obs: O Operador % é o melhor amigo de um programador, permite ordenar listas e 
 
 - Operador NOT (NÃO) => ! : Inverte a lógica da sentença 
      - !true => false
-     - !false => true 
+     - !false => true  
+     
+     ### Semana 3 - Estrutura de Controle de Dados ( Condicionais e Repetição)
 
+- **Conteúdo**: Estruturas `if`, `else`, `elseif`, operadores ternários, `match`=> substituto do `swicth/case` , loops `for`, `while`, `do-while` e `foreach`
 
+#### Estrutura de Controle de Dados ajudam no processo de automatização em programas e sistemas
 
+##### Condicionais (IF, ELSE, ELSEIF)
 
+- **Forma de Uso**:
 
+uso do `if` apenas 
+Exemplo:  aplicar um desconto de 10% em comrpas acima de 100 Reais;
 
+```mermaid
 
+graph LR
+    A[comando] --> B[condição] --> C[Tomada de Decisão]
 
+```
 
+```php
+if ($valorCompra > 100) {
+    $valorCompra = $valorCompra * 0.9;
+}
+```
 
+- Uso do `if` e do `else`
+Exemplo: Aplicar um desconto de 10% para compras acima de 100 reais e 5% para as demais compras
+
+```mermaid
+
+graph LR 
+
+    A[comando] --> B[condição] 
+    B --> |true| C[ação1]
+    B --> |false| D[ação2]
+
+```
+
+```php
+
+if ($valorCompra > 100) { 
+     $valorfinal = $valorcompra*0.1;
+} else{ 
+     $valorfinal = $valorcompra*0.05;
+} 
+```
+
+- Uso do `elseif`(encadeado)
+Exemplo: compras acima de 200 reais tem 15 % de desconto , acima de 100 reais tem 10% de desconto e outras 5% de desconto 
+
+```mermaid
+
+graph LR
+    A[comando] --> B{condição 1}
+    B --> |true| C[ação 1]
+    B --> |false| D{condição 2}
+    D --> |true| E[ação 2]
+    D --> |false| F[ação 3] 
+
+  ```
+
+```php 
+
+if($valorCompra > 200) {
+    $valorFinal = $valorCompra*0.85;
+} elseif($valorCompra >100) {
+    $valorFinal - $valorCompra*0.9;
+} else {
+    $valorFinal = $valorCompra*0.95;
+}
+
+```
+
+*obs*: sempre usar `elseif` para situações que precisam de mais de uma condição, ou seja, fazer encadeamento das condições. 
+
+- Uso **ERRADO** do if 
+
+Não fazer o encadeamento de condicionais
+
+```php
+
+if($valorcompra > 200) {
+    $valorfinal = $valorcompra *0.85;
+}
+if($valorcompra > 100) {
+    $valorfinal = $valorcompra *0.90;
+}
+if(valorcompra < 100) {
+    $valorfinal = $valorcompra*0.95;
+}
+```
+##### Operadores ternários 
+Um atalho para a estrutura condicional `if/else` , normalmente escrito em uma unica linha de código.
+
+` condição ? verdadeira : falso `
+Perfeito para decisões curtas de uma linha de comando 
+Exemplo: Verificar se pessoa é maior de idade (18)
+
+```php
+
+$idade= 20; 
+// O formato é : (condição) ? verdadeiro : falso ; 
+
+$status = ($idade >= 18) ? "Maior de idade" : "menor de idade";
+
+```
+##### Expressão `match` (PHP 8)
+No mercado de PHP atual , não se usa masi uma dezena de `if/elseif` para checar valores fixos, e o antigo `switch/case`caiu em desuso. Usamos o `match`. Ele compara um valor e retorna diretamente o resultado .
+```mermaid
+
+graph TD
+   A[valor] --> B{Condicional}
+    B --> C[Ação 1]
+    B --> D[Ação 2]
+    B --> E[Ação 3]
+    B --> F[Ação 4]
+    B --> G[...]
+    B --> H[Ação default]
+  
+```  
+```php 
+$diaSemana = date ("Week"); // pega o dia da semana em formato numérico
+
+// transformar dia da semana em formato texto (domingo, segunda,...)
+
+$nomeDiaSemana = match($diasemana){
+    "0" => "Domingo",
+    "1" => "Segunda",
+    "2" => "Terça",
+    "3" => "Quarta",
+    "4" => "Quinta",
+    "5" => "Sexta",
+    "6" => "Sábado",
+    "default" => "Dia Inválido"
+};
+
+```
+--- 
+##### Laços de repetição 
+Um laço de repetição faz com que , um bloco de códigos rode várias vezes, até que uma condição mande parar.
+
+- O laço `while` (enqunato)
+Ele verifica se a condição é verdadeira ANTES de entrar no laço ideal quando você não sabe quantas vezes vai rodar o laço.
+
+```mermaid
+ flowchart LR 
+ A [início] --> B{condição}
+ B --true--> C[executa o laço]
+ C --> B
+ B --false--> D[interrompe o laço]
+ ``` 
+    
+Exemplo: Jogo de Adivinhação de um n° Secreto 
+```php
+
+$numeroSecreto = 7;
+$tentativas = 0;
+
+while($tentativa != $numeroSecreto){
+    echo "tente novamente"
+    // vou pegar um n° aleatório entre 1 e 10 
+    $tentativa = rand(1,10);
+}
+
+echo "Acertouu!! o n° secreto é $numerosecreto"
+```
+- O laço `do-while` (faça enquanto)
+A diferença é que ele executa o bloco pelo menos uma vez, mesmo que a condição seja falsa desde o início, pois ele só pergunta no final .
+
+```mermaid 
+flowchart LR 
+
+A([Início]) --> B[Executar Ação]
+B --> C{Condição}
+C --true--> B
+C --false--> D([Fim]) 
+
+```
+
+Exemplo: Jogo de Adivinhação
+
+```php
+
+$numeroSecreto = rand(1,10);
+
+do {
+    $tentativa = rand(1,10); //Simular um palpite aleatório
+
+    if($tentativa == $numeroSecreto){
+        echo "Parabéns, Acertou!!!";
+    }
+  
+} while ($tentativa != $numeroSecreto);
+
+```
+
+obs: Uso Idela do `do-while`, Menus de sistema ou sistema de solicitações de dados, sistemas interativos;
+
+```
