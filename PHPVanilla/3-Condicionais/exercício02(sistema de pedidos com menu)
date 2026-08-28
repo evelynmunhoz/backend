@@ -1,0 +1,247 @@
+<?php
+
+declare(strict_types=1);
+// PRODUTOS
+$produtos = [
+    1 => ["nome" => "Coxinha", "preco" => 6.00, "estoque" => 10],
+    2 => ["nome" => "Suco", "preco" => 5.00, "estoque" => 8],
+    3 => ["nome" => "Sanduíche", "preco" => 12.00, "estoque" => 5],
+    4 => ["nome" => "Bolo", "preco" => 7.50, "estoque" => 6]
+];
+// PEDIDO COMEÇA VAZIO
+$pedido = [];
+// OPÇÃO INICIAL
+$opcao = 0;
+
+// MENU PRINCIPAL
+do {
+
+    echo "       CANTINA SENAI\n";
+    echo "1 - Listar produtos\n";
+    echo "2 - Adicionar produto ao pedido\n";
+    echo "3 - Exibir resumo do pedido\n";
+    echo "4 - Finalizar compra\n";
+    echo "0 - Sair sem finalizar\n";
+
+    $opcao = (int) fgets(STDIN);
+
+    match ($opcao) {
+
+        1 => print("\n--- PRODUTOS ---\n"),
+        2 => print("\n--- ADICIONAR PRODUTO ---\n"),
+        3 => print("\n--- RESUMO DO PEDIDO ---\n"),
+        4 => print("\n--- FINALIZANDO COMPRA ---\n"),
+        0 => print("\nSaindo da Cantina SENAI...\n"),
+        default => print("\nOpção inválida!\n")
+    };
+
+    // LISTAR PRODUTOS
+    if ($opcao == 1) {
+
+        echo "\nCódigo | Produto | Preço | Estoque\n";
+        echo "-----------------------------------\n";
+
+        foreach ($produtos as $codigo => $produto) {
+
+            echo $codigo . " | ";
+            echo $produto["nome"] . " | ";
+            echo "R$ " . number_format($produto["preco"], 2, ',', '.') . " | ";
+            echo $produto["estoque"] . "\n";
+        }
+    // ADICIONAR PRODUTO
+    } elseif ($opcao == 2) {
+
+        echo "\nDigite o código do produto: ";
+        $codigo = (int) fgets(STDIN);
+
+        if (!isset($produtos[$codigo])) {
+            echo "Produto não encontrado!\n";
+            continue;
+        }
+
+        if ($produtos[$codigo]["estoque"] <= 0) {
+            echo "Produto sem estoque!\n";
+            continue;
+        }
+
+        echo "Produto escolhido: ";
+        echo $produtos[$codigo]["nome"] . "\n";
+
+        echo "Estoque disponível: ";
+        echo $produtos[$codigo]["estoque"] . "\n";
+
+        // VALIDAÇÃO DA QUANTIDADE
+        $quantidade = 0;
+
+        while (
+            $quantidade <= 0 ||
+            $quantidade > $produtos[$codigo]["estoque"]
+        ) {
+
+            echo "Digite a quantidade: ";
+            $quantidade = (int) fgets(STDIN);
+
+            if ($quantidade <= 0) {
+
+                echo "Quantidade inválida!\n";
+
+            } elseif ($quantidade > $produtos[$codigo]["estoque"]) {
+
+                echo "Quantidade maior que o estoque disponível!\n";
+
+            } else {
+
+                echo "Quantidade válida!\n";
+            }
+        }
+
+        // DIMINUI O ESTOQUE
+        $produtos[$codigo]["estoque"] -= $quantidade;
+
+        // ADICIONA AO PEDIDO
+        $pedido[] = [
+            "nome" => $produtos[$codigo]["nome"],
+            "preco" => $produtos[$codigo]["preco"],
+            "quantidade" => $quantidade
+        ];
+
+        echo "Produto adicionado ao pedido!\n";
+
+    // RESUMO DO PEDIDO
+    } elseif ($opcao == 3) {
+
+        if (empty($pedido)) {
+
+            echo "Nenhum produto foi adicionado ao pedido.\n";
+
+        } else {
+
+            echo "\n";
+            echo "============================================\n";
+            echo "             RESUMO DO PEDIDO\n";
+            echo "============================================\n";
+
+            foreach ($pedido as $item) {
+
+                $subtotal =
+                    $item["quantidade"] *
+                    $item["preco"];
+
+                echo "Produto: ";
+                echo $item["nome"] . "\n";
+
+                echo "Quantidade: ";
+                echo $item["quantidade"] . "\n";
+
+                echo "Preço unitário: R$ ";
+                echo number_format(
+                    $item["preco"],
+                    2,
+                    ',',
+                    '.'
+                ) . "\n";
+
+                echo "Subtotal: R$ ";
+                echo number_format(
+                    $subtotal,
+                    2,
+                    ',',
+                    '.'
+                ) . "\n";
+
+                echo "--------------------------------------------\n";
+            }
+        }
+
+    // FINALIZAR COMPRA
+    } elseif ($opcao == 4) {
+
+        if (empty($pedido)) {
+
+            echo "Não é possível finalizar um pedido vazio.\n";
+            continue;
+        }
+
+        // CALCULA O TOTAL
+        $total = 0;
+
+        for ($i = 0; $i < count($pedido); $i++) {
+
+            $subtotal =
+                $pedido[$i]["quantidade"] *
+                $pedido[$i]["preco"];
+
+            $total = $total + $subtotal;
+        }
+
+        echo "\nTotal da compra: R$ ";
+        echo number_format($total, 2, ',', '.') . "\n";
+
+        // FORMA DE PAGAMENTO
+        echo "\nEscolha a forma de pagamento:\n";
+        echo "1 - Pix\n";
+        echo "2 - Cartão\n";
+        echo "3 - Dinheiro\n";
+
+        $pagamento = (int) fgets(STDIN);
+
+        // DESCONTO
+        $desconto = match ($pagamento) {
+
+            1 => 0.05,
+            2 => 0.00,
+            3 => 0.03,
+            default => -1
+        };
+
+        // VERIFICA PAGAMENTO
+        if ($desconto == -1) {
+
+            echo "Pagamento inválido!\n";
+            continue;
+
+        } else {
+
+            $valorDesconto = $total * $desconto;
+            $valorFinal = $total - $valorDesconto;
+
+            echo "\nDesconto: ";
+            echo ($desconto * 100) . "%\n";
+
+            echo "Valor do desconto: R$ ";
+            echo number_format(
+                $valorDesconto,
+                2,
+                ',',
+                '.'
+            ) . "\n";
+
+            echo "Valor final: R$ ";
+            echo number_format(
+                $valorFinal,
+                2,
+                ',',
+                '.'
+            ) . "\n";
+
+            echo "\nCompra finalizada com sucesso!\n";
+        }
+
+        break;
+
+    // SAIR
+    } elseif ($opcao == 0) {
+
+        echo "Compra não finalizada.\n";
+        break;
+
+    // OPÇÃO INVÁLIDA
+    } else {
+
+        echo "Digite uma opção entre 0 e 4.\n";
+        continue;
+    }
+
+} while ($opcao != 4 && $opcao != 0);
+
+?>
