@@ -701,6 +701,10 @@ A função `saudar` não conhece a variável global `$nome`. Ocasionando um erro
 
 > **Resumo**: variáveis protegem os dados internos da função; parâmetros são o caminho recomendado para evitar Erros e enviar Informações, e `return`é usado para devolver um resultado ao códgio que chamou a função.
 
+--- 
+
+### Semana 5 - Arrays e manipulação avançada de dados 
+
 
 
 
