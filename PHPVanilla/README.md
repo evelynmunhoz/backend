@@ -821,6 +821,68 @@ echo var_dump($frutas);
 //Mostra Tudo: tipo de dados, o tamanho e o valor
 ```
 
+--- 
+
+### Semana 6 - Processamento HTTP e formulários Web 
+
+#### Anatomia de um formulário HTML para Backend
+
+Antes de PHP processar qualquer informação, precisamos coletar informações no FrontEnd através de um `<form>` 
+
+**Exemplo de `<form>` HTML**
+
+```html
+<form action = "processa.php" method= "POST">
+    <label>Nome completo </label>
+    <input type= "text" id= "campoNome" name="nomeUsuario" placeholder="Digite seu nome">
+    <button type="submit">Cadastrar</button>
+</form> 
+```
+
+**Os 3 Pilares do formulário** 
+
+1. action="processa.php" -> O Destino: Define qual script PHP no servidor receberá os dados.
+
+2. method="POST" -> O Transporte: Define a via de protocolo HTTP usada (GET ou POST).
+
+3. name= "nomeUsuarios" -> A etiqueta do dado: É o nome da chave que o PHP usará no array associativo ($POST["nomeUsuario"]).
+
+obs: Nunca Confundir `id` com `name` no input, o PHP ignora o `id`
+
+#### O Protocolo HTTP
+
+Quando o Usuário clica no botão `type="submit"`, o navegador compila todas as informações dos campos preenchidos e dispara um pacote de comunicação padronizado pelo **Protocolo HTTP(Hypertext Transfer Protocol)**
+
+- **O Formato de Trans
+#### O Protocolo HTTP
+
+Quando o Usuário clica no botão `type="submit"`, o navegador compila todas as informações dos campos preenchidos e dispara um pacote de comunicação padronizado pelo **Protocolo HTTP(Hypertext Transfer Protocol)**
+
+ **O Formato de Transferência** 
+
+ -**Método GET**: solicitar informações públicas e realizar buscas, mas altamente  arriscada para dados privados.
+
+- **Método POST**: As informações viajam quardadas dentro do protocolo
+
+#### Testar o uso dos Protocolos HTTP
+
+OK
+
+#### GET vs. POST 
+
+1. O método GET (consultas e filtros)
+
+O método `GET` é utilizado quando a intenção do cliente é **buscar ou filtrar dados** sem alterar o estado do servidor. Os dados enviados via `GET` são anexados diretamente ao final da URL na forma de uma **Query String**
+
+2. O método POST (envio de cargas  úteis e mutações)
+
+O método `POST` é utilizado quando o formulário envia dados que devem ser processados para **criar ou modificar registros** no sistema (ex: cadastros de usuários, finalizações de compras, upload de arquivos)
+
+
+#### Como os Métodos Funcionam no PHP (`$_GET`, `$_POST`, `$_SERVER`) - As SuperGlobais 
+
+
+
 
 
 
