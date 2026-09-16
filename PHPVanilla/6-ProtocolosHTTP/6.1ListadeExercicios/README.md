@@ -21,7 +21,7 @@ A boa prática é utilizar o método POST junto com HTTPS para proteger os dados
 
 *Importante*: usar POST não torna a senha automaticamente segura. Para proteger a senha durante o envio, deve-se utilizar HTTPS.
 
-# 3.**Coalescência Nula:** Por que a instrução $nome = $_POST['nome']; dispara um Warning na primeira vez que a página é carregada no navegador? Como o operador ?? resolve isso?
+## 3.**Coalescência Nula:** Por que a instrução $nome = $_POST['nome']; dispara um Warning na primeira vez que a página é carregada no navegador? Como o operador ?? resolve isso?
 
 -  Isso acontece porque a chave $_POST['nome'] ainda não existe quando a página carrega pela primeira vez. Por conta disso, o operador ?? verifica se o valor da variável é null, caso seja, ele atribui um valor vazio("").
 
