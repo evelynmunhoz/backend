@@ -1,0 +1,59 @@
+# Parte A: Exercícios Teóricos de Fixação
+
+### 1. Protocolo Stateless
+
+O HTTP é considerado *stateless* porque não guarda automaticamente informações das requisições anteriores. Por isso, cookies e sessões são usados para manter informações do usuário, como o login, durante a navegação.
+Ele não possui memória nativa para associar uma requisição atual a uma anterior feita pelo mesmo usuário. Por essa razão, mecanismos como cookies, tokens (JWT) e sessões baseadas em servidor são fundamentais para criar e manter o estado da aplicação (como o status de login ou um carrinho de compras).
+
+
+### 2. Cookies vs. Sessões
+
+ A principal diferença reside no local de **armazenamento e na segurança**:
+• Cookies: São gravados diretamente no lado do cliente (`navegador`). Podem ser visualizados e alterados pelo usuário ou por scripts (caso não estejam protegidos).
+• Sessões (Sessions): São armazenadas no lado do `servidor`. O navegador guarda apenas um identificador único (o ID da sessão, geralmente enviado via cookie). Como os dados reais não ficam expostos na máquina do usuário, este mecanismo é muito mais seguro para dados confidenciais.
+
+
+### 3. A Flag HttpOnly
+
+A configuração `HttpOnly => true` impede que o JavaScript acesse diretamente o cookie de sessão, dificultando seu roubo em ataques XSS. Porém, não impede todos os ataques, pois um invasor ainda pode executar ações na página vulnerável em nome do usuário.
+
+#### Explicação detalhada:
+• O que ela faz: A flag HttpOnly bloqueia o acesso aos cookies através de APIs do lado do cliente, como document.cookie no JavaScript. Isso neutraliza a variação mais comum de ataques XSS (Cross-Site Scripting), onde o invasor tenta roubar o token de sessão para cloná-la em outro computador.
+
+• O que ela não impede: Ela não corrige a vulnerabilidade XSS em si. Se a página contiver um script malicioso injetado, o invasor ainda pode usar o navegador da vítima para realizar requisições automáticas e forjadas (ações em nome do usuário), já que o navegador continuará enviando o cookie automaticamente em todas as requisições para aquele domínio.
+
+
+### 4. A Flag SameSite
+
+O atributo `SameSite=Lax` ajuda a proteger os cookies contra ataques CSRF, dificultando que outros sites enviem requisições automaticamente usando a sessão do usuário.
+
+• o `Lax` é o comportamento padrão (default) na maioria dos navegadores modernos hoje em dia, caso nenhuma flag seja especificada.
+
+### 5. Ataque de Fixação de Sessão
+
+O *Session Fixation* acontece quando um invasor tenta fazer o usuário utilizar um identificador de sessão conhecido por ele. Por isso, `session_regenerate_id(true)` deve ser usado após o login para gerar um novo identificador e excluir a sessão antiga.
+
+•  o invasor injeta um ID de sessão antes do login do usuário, e se o sistema não regenerar o ID, o invasor mantém o acesso após o login.
+
+### 6. MD5 e Rainbow Tables
+
+MD5 e SHA256 são algoritmos rápidos demais para armazenar senhas com segurança. Isso facilita testar muitas combinações em pouco tempo. As *Rainbow Tables* são tabelas de hashes previamente calculados que ajudam a descobrir senhas correspondentes.
+
+• o MD5 e o SHA256 não são tecnicamente "algoritmos de armazenamento de senhas", mas sim funções de hash criptográfico de propósito geral. Por serem rápidos, eles se tornam inseguros para senhas.
+
+### 7. O Papel do Salt
+
+O *Salt* é um valor aleatório adicionado à senha antes da geração do hash. Ele faz com que usuários com a mesma senha tenham hashes diferentes, dificultando ataques com tabelas de hashes previamente calculados.
+• o Salt invalida completamente o uso de Rainbow Tables, forçando o atacante a quebrar cada hash individualmente por força bruta.
+
+
+### 8. Argon2id vs Bcrypt
+
+O Argon2id oferece proteção contra ataques de força bruta por exigir tempo e memória para calcular cada hash. Isso dificulta o uso de GPUs e circuitos ASIC para testar muitas senhas rapidamente.
+
+• O Argon2id é atualmente a recomendação do mercado (como a do OWASP). Seria legal complementar dizendo que o Bcrypt protege apenas controlando o uso de CPU (tempo), enquanto o Argon2id inova ao exigir memória RAM, que é o calcanhar de Aquiles das GPUs e ASICs.
+
+### 9. Timing Attacks
+
+A função `password_verify()` é recomendada porque verifica a senha usando o hash armazenado e os parâmetros do algoritmo utilizado. Já a comparação comum com `===` não é adequada para esse processo e pode apresentar riscos de ataques por tempo de execução quando usada de forma inadequada.
+o `===` • usa uma comparação de "curto-circuito" (para de checar no primeiro caractere diferente). Já a password_verify() (ou funções de comparação como hash_equals()) usa tempo constante, levando o mesmo tempo para validar independentemente de onde o caractere esteja errado.
