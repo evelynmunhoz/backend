@@ -1,0 +1,100 @@
+### Parte A — Exercícios Teóricos de Fixação
+
+**1. Abstração de Dados:**
+PDO (*PHP Data Objects*) é uma interface do PHP que permite realizar conexões e operações com diferentes bancos de dados por meio de uma API padronizada. Ele é preferível ao uso de extensões procedurais específicas, como o antigo `pgsql`, porque facilita a manutenção do código, permite trabalhar com diferentes SGBDs e oferece recursos importantes de segurança, como *prepared statements* e tratamento de exceções.
+
+**2. Ciclo do DSN:**
+DSN (*Data Source Name*) é a string que informa ao PDO os dados necessários para localizar e acessar o banco de dados. No PostgreSQL, os principais parâmetros são:
+
+* `host`: endereço do servidor onde o PostgreSQL está executando.
+* `port`: porta utilizada pelo PostgreSQL para receber conexões.
+* `dbname`: nome do banco de dados que será acessado.
+
+Exemplo:
+
+```php
+$dsn = "pgsql:host=localhost;port=5432;dbname=meu_banco";
+```
+
+**3. Padrão de Portas:**
+A porta padrão do PostgreSQL é **5432**. Ela é informada na string DSN por meio do parâmetro `port`:
+
+```php
+$dsn = "pgsql:host=localhost;port=5432;dbname=meu_banco";
+```
+
+**4. Flags de Integridade:**
+`PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION` faz com que os erros de banco de dados sejam lançados como exceções (`PDOException`). Isso permite tratar os erros utilizando `try/catch`.
+
+Exemplo:
+
+```php
+try {
+    $pdo = new PDO($dsn, $usuario, $senha);
+} catch (PDOException $e) {
+    // Tratamento do erro
+}
+```
+
+Caso essa configuração não seja definida, o comportamento padrão do PDO é **PDO::ERRMODE_SILENT**, no qual os erros não são lançados automaticamente como exceções.
+
+**5. Fetch Mode:**
+`PDO::FETCH_ASSOC` faz com que os resultados das consultas sejam retornados como arrays associativos, utilizando os nomes das colunas como chaves.
+
+Exemplo:
+
+```php
+[
+    "id" => 1,
+    "nome" => "Minecraft"
+]
+```
+
+Isso evita a criação de índices numéricos duplicados para os mesmos dados, tornando o resultado mais enxuto e podendo reduzir o consumo de memória quando comparado a modos que retornam simultaneamente índices numéricos e associativos.
+
+**6. Padrão Singleton:**
+Abrir uma nova conexão com `new PDO()` para cada consulta pode criar muitas conexões simultâneas com o PostgreSQL. Como o servidor possui um limite definido por `max_connections`, várias requisições podem consumir rapidamente esse limite, causando falhas em novas conexões. O padrão Singleton permite reutilizar uma única instância de conexão dentro do ciclo de execução da aplicação.
+
+**7. Encapsulamento do Singleton:**
+O construtor da classe `ConexaoBanco` deve ser `private` para impedir que outras partes do programa criem objetos diretamente usando `new`.
+
+Além disso, para preservar a unicidade da instância, normalmente são bloqueados:
+
+* `__construct()` — impede criação direta;
+* `__clone()` — impede clonagem da instância;
+* `__wakeup()` — impede a criação de outra instância por desserialização.
+
+Exemplo:
+
+```php
+private function __construct() {}
+
+private function __clone() {}
+
+public function __wakeup() {
+    throw new Exception("Não é permitido desserializar esta classe.");
+}
+```
+
+**8. Segurança de Credenciais:**
+Usuário e senha não devem ficar *hardcoded* nos scripts PHP porque o código pode ser enviado para um repositório Git, compartilhado com outras pessoas ou exposto acidentalmente. Isso poderia permitir acesso não autorizado ao banco de dados.
+
+O ideal é utilizar variáveis de ambiente, arquivos de configuração protegidos ou serviços de gerenciamento de segredos, mantendo as credenciais fora do código-fonte versionado.
+
+**9. Tratamento de Exceções & LGPD:**
+Exibir diretamente `$e->getMessage()` no navegador pode revelar informações internas, como nome do banco, endereço do servidor, tabelas, consultas SQL ou detalhes da estrutura do sistema. Essas informações podem ajudar um atacante a identificar vulnerabilidades.
+
+Em produção, o erro deve ser **registrado internamente** e o usuário deve receber apenas uma mensagem genérica.
+
+Exemplo:
+
+```php
+try {
+    $pdo = new PDO($dsn, $usuario, $senha);
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    echo "Ocorreu um erro ao processar a solicitação.";
+}
+```
+
+Assim, os detalhes técnicos permanecem nos registros do servidor e não são expostos diretamente ao usuário.
